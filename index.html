@@ -39,6 +39,16 @@
     <br />
 
     <div class="form-check form-switch">
+      <label class="form-check-label" for="tremolo">Tremolo Pedal</label>
+      <input class="form-check-input" type="checkbox" id="tremolo" />
+    </div>
+    <label for="Tdepth" class="form-label">Depth</label>
+    <input type="range" class="form-range" id="Tdepth" disabled />
+    <label for="Trate" class="form-label">Rate</label>
+    <input type="range" class="form-range" id="Trate" disabled />
+    <br />
+
+    <div class="form-check form-switch">
       <label class="form-check-label" for="reverb">Reverb Pedal</label>
       <input class="form-check-input" type="checkbox" id="reverb" />
     </div>
@@ -65,6 +75,10 @@
       var Fgain = document.getElementById("Fgain");
       var Fmix = document.getElementById("Fmix");
 
+      var trem = document.getElementById("tremolo");
+      var Tdepth = document.getElementById("Tdepth");
+      var Trate = document.getElementById("Trate");
+
       var reverb = document.getElementById("reverb");
       var Rgain = document.getElementById("Rgain");
       var Rmix = document.getElementById("Rmix");
@@ -74,6 +88,7 @@
       var Emix = document.getElementById("Emix");
 
       var fuzzOn = "0";
+      var tremOn = "0";
       var reverbOn = "0";
       var echoOn = "0";
 
@@ -94,6 +109,22 @@
             fuzzOn = "0";
             Fgain.disabled = true;
             Fmix.disabled = true;
+          }
+        }
+
+        var td = Tdepth.value.toString().padStart(3, "0");
+        var tr = Trate.value.toString().padStart(3, "0");
+
+        var tremChk = trem.checked ? "T" : "F";
+        if (tremChk != tremOn) {
+          if (trem.checked) {
+            tremOn = "1";
+            Tdepth.disabled = false;
+            Trate.disabled = false;
+          } else if (!trem.checked) {
+            tremOn = "0";
+            Tdepth.disabled = true;
+            Trate.disabled = true;
           }
         }
 
@@ -129,7 +160,19 @@
           }
         }
 
-        const output = fuzzOn + fg + fm + reverbOn + rg + rm + echoOn + eg + em;
+        const output =
+          fuzzOn +
+          fg +
+          fm +
+          tremOn +
+          td +
+          tr +
+          reverbOn +
+          rg +
+          rm +
+          echoOn +
+          eg +
+          em;
         socket.emit("output", { pedalConfig: output });
       };
     </script>
