@@ -68,6 +68,16 @@
     <input type="range" class="form-range" id="Emix" disabled />
     <br />
 
+    <div class="form-check form-switch">
+      <label class="form-check-label" for="flanger">Flanger Pedal</label>
+      <input class="form-check-input" type="checkbox" id="flanger" />
+    </div>
+    <label for="Fdepth" class="form-label">Depth</label>
+    <input type="range" class="form-range" id="Fdepth" disabled />
+    <label for="Frate" class="form-label">Rate</label>
+    <input type="range" class="form-range" id="Frate" disabled />
+    <br />
+
     <script>
       var socket = io();
 
@@ -87,13 +97,15 @@
       var Egain = document.getElementById("Egain");
       var Emix = document.getElementById("Emix");
 
+      var flanger = document.getElementById("flanger");
+      var Fdepth = document.getElementById("Fdepth");
+      var Frate = document.getElementById("Frate");
+
       var fuzzOn = "0";
       var tremOn = "0";
       var reverbOn = "0";
       var echoOn = "0";
-
-      // Fgain.value = 50;
-      // Fmix.value = 50;
+      var flangerOn = "0";
 
       document.onchange = function () {
         var fg = Fgain.value.toString().padStart(3, "0");
@@ -160,6 +172,22 @@
           }
         }
 
+        var fd = Fdepth.value.toString().padStart(3, "0");
+        var fr = Frate.value.toString().padStart(3, "0");
+
+        var flangerChk = flanger.checked ? "T" : "F";
+        if (flangerChk != flangerOn) {
+          if (flanger.checked) {
+            flangerOn = "1";
+            Fdepth.disabled = false;
+            Frate.disabled = false;
+          } else if (!flanger.checked) {
+            flangerOn = "0";
+            Fdepth.disabled = true;
+            Frate.disabled = true;
+          }
+        }
+
         const output =
           fuzzOn +
           fg +
@@ -172,7 +200,10 @@
           rm +
           echoOn +
           eg +
-          em;
+          em +
+          flangerOn +
+          fd +
+          fr;
         socket.emit("output", { pedalConfig: output });
       };
     </script>
