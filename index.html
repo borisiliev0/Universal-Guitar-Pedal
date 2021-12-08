@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Universal Guitar Pedal</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <!-- Bootstrap Bundle with Popper -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+      crossorigin="anonymous"
+    ></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io();
+    </script>
+    <style>
+      .form-check-label {
+        font-size: 40px;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <header><h1>Universal Guitar Pedal</h1></header>
+    <div class="form-check form-switch">
+      <label class="form-check-label" for="fuzz">Fuzz Pedal</label>
+      <input class="form-check-input" type="checkbox" id="fuzz" />
+    </div>
+    <label for="Fgain" class="form-label">Gain</label>
+    <input type="range" class="form-range" id="Fgain" disabled />
+    <label for="Fmix" class="form-label">Mix</label>
+    <input type="range" class="form-range" id="Fmix" disabled />
+    <br />
+
+    <div class="form-check form-switch">
+      <label class="form-check-label" for="reverb">Reverb Pedal</label>
+      <input class="form-check-input" type="checkbox" id="reverb" />
+    </div>
+    <label for="Rgain" class="form-label">Gain</label>
+    <input type="range" class="form-range" id="Rgain" disabled />
+    <label for="Rmix" class="form-label">Mix</label>
+    <input type="range" class="form-range" id="Rmix" disabled />
+    <br />
+
+    <div class="form-check form-switch">
+      <label class="form-check-label" for="echo">Echo Pedal</label>
+      <input class="form-check-input" type="checkbox" id="echo" />
+    </div>
+    <label for="Egain" class="form-label">Gain</label>
+    <input type="range" class="form-range" id="Egain" disabled />
+    <label for="Emix" class="form-label">Mix</label>
+    <input type="range" class="form-range" id="Emix" disabled />
+    <br />
+
+    <script>
+      var socket = io();
+
+      var fuzz = document.getElementById("fuzz");
+      var Fgain = document.getElementById("Fgain");
+      var Fmix = document.getElementById("Fmix");
+
+      var reverb = document.getElementById("reverb");
+      var Rgain = document.getElementById("Rgain");
+      var Rmix = document.getElementById("Rmix");
+
+      var echo = document.getElementById("echo");
+      var Egain = document.getElementById("Egain");
+      var Emix = document.getElementById("Emix");
+
+      var fuzzOn = "0";
+      var reverbOn = "0";
+      var echoOn = "0";
+
+      // Fgain.value = 50;
+      // Fmix.value = 50;
+
+      document.onchange = function () {
+        var fg = Fgain.value.toString().padStart(3, "0");
+        var fm = Fmix.value.toString().padStart(3, "0");
+
+        var fuzzChk = fuzz.checked ? "T" : "F";
+        if (fuzzChk != fuzzOn) {
+          if (fuzz.checked) {
+            fuzzOn = "1";
+            Fgain.disabled = false;
+            Fmix.disabled = false;
+          } else if (!fuzz.checked) {
+            fuzzOn = "0";
+            Fgain.disabled = true;
+            Fmix.disabled = true;
+          }
+        }
+
+        var rg = Rgain.value.toString().padStart(3, "0");
+        var rm = Rmix.value.toString().padStart(3, "0");
+
+        var reverbChk = reverb.checked ? "T" : "F";
+        if (reverbChk != reverbOn) {
+          if (reverb.checked) {
+            reverbOn = "1";
+            Rgain.disabled = false;
+            Rmix.disabled = false;
+          } else if (!reverb.checked) {
+            reverbOn = "0";
+            Rgain.disabled = true;
+            Rmix.disabled = true;
+          }
+        }
+
+        var eg = Egain.value.toString().padStart(3, "0");
+        var em = Emix.value.toString().padStart(3, "0");
+
+        var echoChk = echo.checked ? "T" : "F";
+        if (echoChk != echoOn) {
+          if (echo.checked) {
+            echoOn = "1";
+            Egain.disabled = false;
+            Emix.disabled = false;
+          } else if (!echo.checked) {
+            echoOn = "0";
+            Egain.disabled = true;
+            Emix.disabled = true;
+          }
+        }
+
+        const output = fuzzOn + fg + fm + reverbOn + rg + rm + echoOn + eg + em;
+        socket.emit("output", { pedalConfig: output });
+      };
+    </script>
+
+    <script src="./main.js"></script>
+  </body>
+</html>
